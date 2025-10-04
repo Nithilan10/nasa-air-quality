@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Zap, TrendingDown, Target, Leaf, Car, Home, Utensils, Plane } from 'lucide-react';
+import { Zap, TrendingDown, Target, Leaf, Car, Home, Utensils, Plane, Cloud, Thermometer, Droplets, Wind } from 'lucide-react';
 
 const carbonReductionTips = [
   {
@@ -123,17 +123,47 @@ export default function CarbonPage() {
   const currentCarbonFootprint = calculateCarbonFootprint();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white">
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Hero Section */}
         <section className="text-center py-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 text-blue-100">
             Carbon Footprint Tracker
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Monitor your carbon emissions and discover ways to reduce your environmental impact.
             Every action counts in the fight against climate change.
           </p>
+        </section>
+
+        {/* Current Air Quality Summary */}
+        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+          <h3 className="text-2xl font-semibold mb-6 flex items-center">
+            <Cloud className="w-8 h-8 mr-3 text-blue-400" />
+            Current Air Quality & Weather
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="bg-blue-800 rounded-xl p-6 text-center">
+              <div className="text-4xl font-bold">42</div>
+              <div className="text-sm opacity-80">AQI Index</div>
+              <div className="text-xs mt-2">Good</div>
+            </div>
+            <div className="bg-slate-700 rounded-xl p-6 text-center">
+              <Thermometer className="w-8 h-8 mx-auto mb-2" />
+              <div className="text-2xl font-bold">24°C</div>
+              <div className="text-sm opacity-80">Temperature</div>
+            </div>
+            <div className="bg-blue-700 rounded-xl p-6 text-center">
+              <Droplets className="w-8 h-8 mx-auto mb-2" />
+              <div className="text-2xl font-bold">65%</div>
+              <div className="text-sm opacity-80">Humidity</div>
+            </div>
+            <div className="bg-slate-600 rounded-xl p-6 text-center">
+              <Wind className="w-8 h-8 mx-auto mb-2" />
+              <div className="text-2xl font-bold">12 mph</div>
+              <div className="text-sm opacity-80">Wind Speed</div>
+            </div>
+          </div>
         </section>
 
         {/* Carbon Footprint Calculator */}
@@ -270,19 +300,19 @@ export default function CarbonPage() {
 
           {/* Results Display */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-6 text-center">
+            <div className="bg-orange-800 rounded-xl p-6 text-center">
               <div className="text-3xl font-bold">{currentCarbonFootprint.daily}kg</div>
               <div className="text-sm opacity-80">Daily CO₂</div>
             </div>
-            <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-xl p-6 text-center">
+            <div className="bg-red-800 rounded-xl p-6 text-center">
               <div className="text-3xl font-bold">{currentCarbonFootprint.weekly}kg</div>
               <div className="text-sm opacity-80">Weekly CO₂</div>
             </div>
-            <div className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl p-6 text-center">
+            <div className="bg-pink-800 rounded-xl p-6 text-center">
               <div className="text-3xl font-bold">{currentCarbonFootprint.monthly}kg</div>
               <div className="text-sm opacity-80">Monthly CO₂</div>
             </div>
-            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl p-6 text-center">
+            <div className="bg-purple-800 rounded-xl p-6 text-center">
               <div className="text-3xl font-bold">{currentCarbonFootprint.goal}kg</div>
               <div className="text-sm opacity-80">Monthly Goal</div>
             </div>

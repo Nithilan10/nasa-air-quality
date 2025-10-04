@@ -59,7 +59,7 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
 
   if (!userLocation) {
     return (
-      <div className="h-64 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+      <div className="h-64 bg-slate-700 rounded-xl flex items-center justify-center">
         <div className="text-center">
           <MapPin className="w-16 h-16 mx-auto mb-4 text-white/50" />
           <p className="text-white/70">Loading map and getting your location...</p>
@@ -74,7 +74,7 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
   // exist yet (or during SSR).
   if (!isMounted) {
     return (
-      <div className="h-64 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+      <div className="h-64 bg-slate-700 rounded-xl flex items-center justify-center">
         <div className="text-center">
           <MapPin className="w-16 h-16 mx-auto mb-4 text-white/50" />
           <p className="text-white/70">Preparing map...</p>
@@ -296,8 +296,6 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
         })
       }
     </MapContainer>
-      {/* subtle gradient overlay to add 'heatmap' feel (purely visual) */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent mix-blend-overlay" />
     </div>
   );
 }

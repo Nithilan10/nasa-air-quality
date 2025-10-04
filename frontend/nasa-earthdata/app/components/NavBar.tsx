@@ -77,11 +77,11 @@ export default function NavBar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 shadow-sm">
+    <header className="sticky top-0 z-50 bg-slate-900 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center">
         {/* Left: Title (smaller, full-gradient) */}
         <div className="flex items-center min-w-[140px] mr-4">
-          <Link href="/" className="text-lg md:text-xl font-semibold bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 text-transparent">
+          <Link href="/" className="text-lg md:text-xl font-semibold text-blue-100">
             TEMPO Air Quality Monitor
           </Link>
         </div>

@@ -10,7 +10,7 @@ import { LocationContext } from './contexts/LocationContext';
 const AQIMap = dynamic(() => import('./components/AQIMap'), {
   ssr: false,
   loading: () => (
-    <div className="h-64 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+    <div className="h-64 bg-slate-700 rounded-xl flex items-center justify-center">
       <div className="text-center">
         <MapPin className="w-16 h-16 mx-auto mb-4 text-white/50" />
         <p className="text-white/70">Loading map...</p>
@@ -97,11 +97,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white">
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Hero Section */}
         <section className="text-center py-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 text-blue-100">
             Air Quality Dashboard
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -117,22 +117,22 @@ export default function Home() {
             Current Air Quality & Weather
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-6 text-center">
+            <div className="bg-blue-800 rounded-xl p-6 text-center">
               <div className="text-4xl font-bold">42</div>
               <div className="text-sm opacity-80">AQI Index</div>
               <div className="text-xs mt-2">Good</div>
             </div>
-            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl p-6 text-center">
+            <div className="bg-slate-700 rounded-xl p-6 text-center">
               <Thermometer className="w-8 h-8 mx-auto mb-2" />
               <div className="text-2xl font-bold">24°C</div>
               <div className="text-sm opacity-80">Temperature</div>
             </div>
-            <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl p-6 text-center">
+            <div className="bg-blue-700 rounded-xl p-6 text-center">
               <Droplets className="w-8 h-8 mx-auto mb-2" />
               <div className="text-2xl font-bold">65%</div>
               <div className="text-sm opacity-80">Humidity</div>
             </div>
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-center">
+            <div className="bg-slate-600 rounded-xl p-6 text-center">
               <Wind className="w-8 h-8 mx-auto mb-2" />
               <div className="text-2xl font-bold">12 mph</div>
               <div className="text-sm opacity-80">Wind Speed</div>
@@ -204,17 +204,17 @@ export default function Home() {
         <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
           <h3 className="text-2xl font-semibold mb-6">Quick Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="/maps" className="p-6 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl text-center hover:from-blue-600 hover:to-cyan-600 transition-all">
+            <a href="/maps" className="p-6 bg-blue-700 rounded-xl text-center hover:bg-blue-600 transition-all">
               <MapPin className="w-12 h-12 mx-auto mb-4" />
               <h4 className="text-lg font-semibold mb-2">View Maps</h4>
               <p className="text-sm opacity-80">Explore air quality maps and data</p>
             </a>
-            <a href="/health" className="p-6 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl text-center hover:from-red-600 hover:to-pink-600 transition-all">
+            <a href="/health" className="p-6 bg-red-800 rounded-xl text-center hover:bg-red-700 transition-all">
               <Heart className="w-12 h-12 mx-auto mb-4" />
               <h4 className="text-lg font-semibold mb-2">Health Tips</h4>
               <p className="text-sm opacity-80">Health recommendations and alerts</p>
             </a>
-            <a href="/carbon" className="p-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl text-center hover:from-green-600 hover:to-emerald-600 transition-all">
+            <a href="/carbon" className="p-6 bg-green-800 rounded-xl text-center hover:bg-green-700 transition-all">
               <Zap className="w-12 h-12 mx-auto mb-4" />
               <h4 className="text-lg font-semibold mb-2">Carbon Tracker</h4>
               <p className="text-sm opacity-80">Monitor your carbon footprint</p>

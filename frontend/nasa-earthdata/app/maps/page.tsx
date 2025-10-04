@@ -2,7 +2,7 @@
 
 import { useContext, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { MapPin, Download, Layers, Thermometer, Eye, Zap } from 'lucide-react';
+import { MapPin, Download, Layers, Thermometer, Eye, Zap, Cloud, Droplets, Wind } from 'lucide-react';
 import TopSpots from '../components/TopSpots';
 import { LocationContext } from '../contexts/LocationContext';
 
@@ -10,7 +10,7 @@ import { LocationContext } from '../contexts/LocationContext';
 const AQIMap = dynamic(() => import('../components/AQIMap'), {
   ssr: false,
   loading: () => (
-    <div className="h-64 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+    <div className="h-64 bg-slate-700 rounded-xl flex items-center justify-center">
       <div className="text-center">
         <MapPin className="w-16 h-16 mx-auto mb-4 text-white/50" />
         <p className="text-white/70">Loading map...</p>
@@ -75,17 +75,47 @@ export default function MapsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white">
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Hero Section */}
         <section className="text-center py-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 text-blue-100">
             Air Quality Maps
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Interactive maps showing real-time air quality data from NASA's TEMPO mission.
             Explore different visualization types and download data for analysis.
           </p>
+        </section>
+
+        {/* Current Air Quality Summary */}
+        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+          <h3 className="text-2xl font-semibold mb-6 flex items-center">
+            <Cloud className="w-8 h-8 mr-3 text-blue-400" />
+            Current Air Quality & Weather
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="bg-blue-800 rounded-xl p-6 text-center">
+              <div className="text-4xl font-bold">42</div>
+              <div className="text-sm opacity-80">AQI Index</div>
+              <div className="text-xs mt-2">Good</div>
+            </div>
+            <div className="bg-slate-700 rounded-xl p-6 text-center">
+              <Thermometer className="w-8 h-8 mx-auto mb-2" />
+              <div className="text-2xl font-bold">24°C</div>
+              <div className="text-sm opacity-80">Temperature</div>
+            </div>
+            <div className="bg-blue-700 rounded-xl p-6 text-center">
+              <Droplets className="w-8 h-8 mx-auto mb-2" />
+              <div className="text-2xl font-bold">65%</div>
+              <div className="text-sm opacity-80">Humidity</div>
+            </div>
+            <div className="bg-slate-600 rounded-xl p-6 text-center">
+              <Wind className="w-8 h-8 mx-auto mb-2" />
+              <div className="text-2xl font-bold">12 mph</div>
+              <div className="text-sm opacity-80">Wind Speed</div>
+            </div>
+          </div>
         </section>
 
         {/* Map Type Selector */}
