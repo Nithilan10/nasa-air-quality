@@ -16,7 +16,7 @@ export default function NavBar() {
 
   const bellRef = useRef<HTMLButtonElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number }>({ top: -1000, left: -1000 });
 
   const updateDropdownPosition = () => {
     const bell = bellRef.current;
@@ -139,7 +139,7 @@ export default function NavBar() {
                               <p className="text-xs text-gray-500 mt-1">{new Date().toLocaleTimeString()}</p>
                             </div>
                           </div>
-                          <button onClick={() => dismissNotification(notification.id)} className="text-gray-400 hover:text-gray-600 ml-2">✕</button>
+                          <button onClick={(e) => { e.stopPropagation(); dismissNotification(notification.id); }} className="text-gray-400 hover:text-gray-600 ml-2">✕</button>
                         </div>
                       </div>
                     ))
@@ -147,7 +147,7 @@ export default function NavBar() {
                 </div>
                 {activeNotifications.length > 0 && (
                   <div className="p-3 border-t border-gray-200">
-                    <button onClick={() => setActiveNotifications([])} className="w-full text-sm text-blue-600 hover:text-blue-800 font-medium">Clear All</button>
+                    <button onClick={(e) => { e.stopPropagation(); setActiveNotifications([]); }} className="w-full text-sm text-blue-600 hover:text-blue-800 font-medium">Clear All</button>
                   </div>
                 )}
               </div>,
