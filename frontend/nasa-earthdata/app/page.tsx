@@ -3,7 +3,7 @@
 import { AlertTriangle, Cloud, Droplets, Wind, MapPin, TrendingUp, Heart, Thermometer, Eye, Zap, Activity, Shield, Phone, Info, Sun, Moon } from 'lucide-react';
 import { useEffect, useState, useRef, useContext } from 'react';
 import dynamic from 'next/dynamic';
-import { LocationContext } from './contexts/LocationContext';
+import TopSpots from './components/TopSpots';
 
 // Dynamically import the map component to avoid SSR issues
 const AQIMap = dynamic(() => import('./components/AQIMap'), {
@@ -94,6 +94,33 @@ export default function Home() {
     if (aqi <= 200) return 'Unhealthy';
     if (aqi <= 300) return 'Very Unhealthy';
     return 'Hazardous';
+  };
+
+  // CSV export of dummy AQI data
+  const downloadCSV = () => {
+    if (!dummyAQIData || dummyAQIData.length === 0) return;
+    const header = ['lat,lng,aqi'];
+    const rows = dummyAQIData.map(d => `${d.lat},${d.lng},${d.aqi}`);
+    const csv = header.concat(rows).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dummy_aqi_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  // Very small demo 'prediction' based on simple moving average of nearby dummy points
+  const predictAQIInHours = (hours: number) => {
+    if (!dummyAQIData || dummyAQIData.length === 0) return null;
+    // simple forecast: take median and add a small diurnal pattern
+    const vals = dummyAQIData.map(d => d.aqi);
+    const median = vals.sort((a,b) => a-b)[Math.floor(vals.length/2)];
+    const diurnal = Math.round(10 * Math.sin((hours / 24) * Math.PI * 2));
+    return Math.max(0, median + diurnal + Math.round((Math.random() - 0.5) * 8));
   };
 
   // Carbon Footprint Calculator
@@ -216,9 +243,31 @@ export default function Home() {
             getAQIColor={getAQIColor}
             getAQIDescription={getAQIDescription}
           />
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+            <div>
+              <button onClick={downloadCSV} className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded text-white">Download Dummy AQI CSV</button>
+            </div>
+            <div className="col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {[1,3,6].map(h => (
+                <div key={h} className="p-3 bg-white/5 rounded flex items-center justify-between">
+                  <div>
+                    <div className="text-sm">In {h}h</div>
+                    <div className="font-semibold text-lg">{predictAQIInHours(h) ?? '—'}</div>
+                    <div className="text-xs text-gray-300">{getAQIDescription(predictAQIInHours(h) ?? 0)}</div>
+                  </div>
+                  <div className="w-6 h-6 rounded-full" style={{ backgroundColor: getAQIColor(predictAQIInHours(h) ?? 0) }} />
+                </div>
+              ))}
+            </div>
+          </div>
           <p className="text-sm text-gray-400 mt-4 text-center">
             Real-time AQI levels across your area (dummy data based on TEMPO mission)
           </p>
+        </section>
+
+        {/* Top Spots Panel */}
+        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+          <TopSpots dummyAQIData={dummyAQIData} getAQIColor={getAQIColor} />
         </section>
 
         {/* Air Quality Trends */}
