@@ -1,9 +1,9 @@
 'use client';
 
-import { AlertTriangle, Cloud, Droplets, Wind, MapPin, Bell, TrendingUp, Heart, Thermometer, Eye, Zap, Activity, Shield, Phone, Info, Sun, Moon } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { AlertTriangle, Cloud, Droplets, Wind, MapPin, TrendingUp, Heart, Thermometer, Eye, Zap, Activity, Shield, Phone, Info, Sun, Moon } from 'lucide-react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import dynamic from 'next/dynamic';
+import { LocationContext } from './contexts/LocationContext';
 
 // Dynamically import the map component to avoid SSR issues
 const AQIMap = dynamic(() => import('./components/AQIMap'), {
@@ -65,9 +65,7 @@ const aqiScale = [
 ];
 
 export default function Home() {
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  const [dummyAQIData, setDummyAQIData] = useState<Array<{ lat: number; lng: number; aqi: number }>>([]);
-  const [userCity, setUserCity] = useState<string>('Detecting location...');
+  const { userLocation, dummyAQIData } = useContext(LocationContext);
 
   // Carbon Footprint Calculator State
   const [commuteDistance, setCommuteDistance] = useState<number>(20); // km per day
@@ -78,132 +76,7 @@ export default function Home() {
   const [airTravel, setAirTravel] = useState<number>(2); // flights per year
   const [carbonGoal, setCarbonGoal] = useState<number>(300); // monthly goal in kg CO2
 
-  // Notification System State
-  const [showNotifications, setShowNotifications] = useState<boolean>(false);
-  const [activeNotifications, setActiveNotifications] = useState(notifications);
-
-  // Refs + positioning for portal dropdown
-  const bellRef = useRef<HTMLButtonElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
-
-  const updateDropdownPosition = () => {
-    const bell = bellRef.current;
-    const dd = dropdownRef.current;
-    if (!bell || !dd) return;
-
-    const rect = bell.getBoundingClientRect();
-    // Position dropdown directly below the bell, centered horizontally to match original look
-    const top = rect.bottom + window.scrollY + 8; // small gap
-    const left = rect.left + window.scrollX - (320 - rect.width) + rect.width; // keep right-aligned similar to original
-    setDropdownPos({ top, left });
-  };
-
-  useEffect(() => {
-    if (!showNotifications) return;
-    updateDropdownPosition();
-
-    const onResize = () => updateDropdownPosition();
-    const onScroll = () => updateDropdownPosition();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowNotifications(false);
-    };
-
-    window.addEventListener('resize', onResize);
-    window.addEventListener('scroll', onScroll, true);
-    window.addEventListener('keydown', onKey);
-
-    return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('scroll', onScroll, true);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [showNotifications]);
-
-  // close on outside click
-  useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (!showNotifications) return;
-      if (dropdownRef.current && !dropdownRef.current.contains(target) && bellRef.current && !bellRef.current.contains(target)) {
-        setShowNotifications(false);
-      }
-    };
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
-  }, [showNotifications]);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation([latitude, longitude]);
-
-          // Generate dummy AQI data points around user location
-          const points = [];
-          for (let i = 0; i < 20; i++) {
-            const latOffset = (Math.random() - 0.5) * 0.1; // ~5-10km radius
-            const lngOffset = (Math.random() - 0.5) * 0.1;
-            const aqi = Math.floor(Math.random() * 100) + 20; // 20-120 AQI
-            points.push({
-              lat: latitude + latOffset,
-              lng: longitude + lngOffset,
-              aqi,
-            });
-          }
-          setDummyAQIData(points);
-
-          // Get city name from coordinates
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`
-            );
-            const data = await response.json();
-            
-            if (data && data.address) {
-              const city = data.address.city || data.address.town || data.address.village || data.address.hamlet;
-              const state = data.address.state || data.address.region;
-              const country = data.address.country;
-              
-              if (city && state) {
-                setUserCity(`${city}, ${state}`);
-              } else if (city) {
-                setUserCity(city);
-              } else if (state) {
-                setUserCity(state);
-              } else {
-                setUserCity(country || 'Unknown Location');
-              }
-            } else {
-              setUserCity(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-            }
-          } catch (error) {
-            console.error('Error fetching location name:', error);
-            setUserCity(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-          }
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          // Default to Los Angeles if geolocation fails
-          setUserLocation([34.0522, -118.2437]);
-          setUserCity('Los Angeles, CA');
-          const points = [];
-          for (let i = 0; i < 20; i++) {
-            const latOffset = (Math.random() - 0.5) * 0.1;
-            const lngOffset = (Math.random() - 0.5) * 0.1;
-            const aqi = Math.floor(Math.random() * 100) + 20;
-            points.push({
-              lat: 34.0522 + latOffset,
-              lng: -118.2437 + lngOffset,
-              aqi,
-            });
-          }
-          setDummyAQIData(points);
-        }
-      );
-    }
-  }, []);
+  // location and map data come from LocationContext
 
   const getAQIColor = (aqi: number) => {
     if (aqi <= 50) return '#00e400'; // Good - green
@@ -258,166 +131,10 @@ export default function Home() {
 
   const currentCarbonFootprint = calculateCarbonFootprint();
 
-  // Notification functions
-  const dismissNotification = (id: number) => {
-    setActiveNotifications(prev => prev.filter(notification => notification.id !== id));
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'warning': return <AlertTriangle className="w-5 h-5 text-yellow-400" />;
-      case 'success': return <Shield className="w-5 h-5 text-green-400" />;
-      case 'info': return <Info className="w-5 h-5 text-blue-400" />;
-      default: return <Bell className="w-5 h-5 text-gray-400" />;
-    }
-  };
-
-  const getNotificationStyle = (type: string) => {
-    switch (type) {
-      case 'warning': return 'border-yellow-500/30 bg-yellow-500/10';
-      case 'success': return 'border-green-500/30 bg-green-500/10';
-      case 'info': return 'border-blue-500/30 bg-blue-500/10';
-      default: return 'border-gray-500/30 bg-gray-500/10';
-    }
-  };
-
-  // Auto-generate notifications based on air quality
-  useEffect(() => {
-    const currentAQI = 42; // This would come from actual AQI data
-    const newNotifications: Array<{id: number, message: string, type: string}> = [];
-
-    if (currentAQI > 100) {
-      newNotifications.push({
-        id: Date.now() + 1,
-        message: `⚠️ High air pollution alert! AQI is ${currentAQI} (${getAQIDescription(currentAQI)}). Stay indoors and wear a mask.`,
-        type: 'warning'
-      });
-    } else if (currentAQI > 50) {
-      newNotifications.push({
-        id: Date.now() + 2,
-        message: `📍 Moderate air quality. AQI: ${currentAQI}. Sensitive individuals should take precautions.`,
-        type: 'info'
-      });
-    } else {
-      newNotifications.push({
-        id: Date.now() + 3,
-        message: `✅ Good air quality today! AQI: ${currentAQI}. Perfect for outdoor activities.`,
-        type: 'success'
-      });
-    }
-
-    // Add time-based notifications
-    const hour = new Date().getHours();
-    if (hour >= 6 && hour <= 9) {
-      newNotifications.push({
-        id: Date.now() + 4,
-        message: '🌅 Morning air quality check: Monitor pollen levels if you have allergies.',
-        type: 'info'
-      });
-    }
-
-    // Only add new notifications if they don't already exist
-    setActiveNotifications(prev => {
-      const existingIds = prev.map(n => n.id);
-      const uniqueNew = newNotifications.filter(n => !existingIds.includes(n.id));
-      return [...prev, ...uniqueNew];
-    });
-  }, []); // Run once on mount, could be modified to run periodically
+  // Notification generation / bell handled by NavBar
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white">
-      {/* Header */}
-      <header className="p-6 bg-black/20 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            TEMPO Air Quality Monitor
-          </h1>
-          <div className="flex items-center space-x-4">
-            <MapPin className="w-6 h-6" />
-            <span className="text-sm">{userCity}</span>
-            {/* Notification Bell */}
-            <div className="relative">
-              <button
-                ref={(el) => { bellRef.current = el; return undefined; }}
-                onClick={() => {
-                  if (!showNotifications) updateDropdownPosition();
-                  setShowNotifications(!showNotifications);
-                }}
-                className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
-              >
-                <Bell className="w-6 h-6" />
-                {activeNotifications.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {activeNotifications.length}
-                  </span>
-                )}
-              </button>
-
-              {/* Notification Dropdown rendered in portal to escape stacking contexts */}
-                {showNotifications && bellRef.current && createPortal(
-                <div
-                  ref={(el) => { dropdownRef.current = el; }}
-                  style={{
-                    position: 'absolute',
-                    top: dropdownPos.top,
-                    left: dropdownPos.left,
-                    width: 320,
-                    zIndex: 99999,
-                  }}
-                  className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/20"
-                >
-                  <div className="p-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-800">Air Quality Alerts</h3>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    {activeNotifications.length === 0 ? (
-                      <div className="p-4 text-center text-gray-500">
-                        <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <p>No new notifications</p>
-                      </div>
-                    ) : (
-                      activeNotifications.map((notification) => (
-                        <div
-                          key={notification.id}
-                          className={`p-4 border-b border-gray-100 last:border-b-0 ${getNotificationStyle(notification.type)}`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-3">
-                              {getNotificationIcon(notification.type)}
-                              <div className="flex-1">
-                                <p className="text-sm text-gray-800">{notification.message}</p>
-                                <p className="text-xs text-gray-500 mt-1">{new Date().toLocaleTimeString()}</p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => dismissNotification(notification.id)}
-                              className="text-gray-400 hover:text-gray-600 ml-2"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  {activeNotifications.length > 0 && (
-                    <div className="p-3 border-t border-gray-200">
-                      <button
-                        onClick={() => setActiveNotifications([])}
-                        className="w-full text-sm text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                  )}
-                </div>,
-                // render into body
-                document.body
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Hero Section */}

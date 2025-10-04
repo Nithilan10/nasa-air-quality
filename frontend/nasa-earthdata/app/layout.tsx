@@ -27,8 +27,29 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* Location provider and global navbar */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script suppressHydrationWarning={true} />
+        <ReactLocationWrapper>
+          {children}
+        </ReactLocationWrapper>
       </body>
     </html>
+  );
+}
+
+// Lightweight wrapper to avoid importing client code at module-level in layout.
+function ReactLocationWrapper({ children }: { children: React.ReactNode }) {
+  // Dynamically load client-only components to keep layout safe for SSR.
+  // We import here so the file remains a server component but can include client UI.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { LocationProvider } = require('./contexts/LocationContext');
+  const NavBar = require('./components/NavBar').default;
+  return (
+    // @ts-ignore - interop require
+    <LocationProvider>
+      <NavBar />
+      {children}
+    </LocationProvider>
   );
 }
