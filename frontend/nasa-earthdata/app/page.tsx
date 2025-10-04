@@ -68,17 +68,6 @@ const aqiScale = [
 export default function Home() {
   const { userLocation, dummyAQIData } = useContext(LocationContext);
 
-  // Carbon Footprint Calculator State
-  const [commuteDistance, setCommuteDistance] = useState<number>(20); // km per day
-  const [transportMode, setTransportMode] = useState<string>('car'); // car, bus, train, bike, walk
-  const [meatConsumption, setMeatConsumption] = useState<number>(7); // servings per week
-  const [electricityUsage, setElectricityUsage] = useState<number>(300); // kWh per month
-  const [wasteGeneration, setWasteGeneration] = useState<number>(5); // kg per week
-  const [airTravel, setAirTravel] = useState<number>(2); // flights per year
-  const [carbonGoal, setCarbonGoal] = useState<number>(300); // monthly goal in kg CO2
-
-  // location and map data come from LocationContext
-
   const getAQIColor = (aqi: number) => {
     if (aqi <= 50) return '#00e400'; // Good - green
     if (aqi <= 100) return '#ffff00'; // Moderate - yellow
@@ -97,23 +86,6 @@ export default function Home() {
     return 'Hazardous';
   };
 
-  // CSV export of dummy AQI data
-  const downloadCSV = () => {
-    if (!dummyAQIData || dummyAQIData.length === 0) return;
-    const header = ['lat,lng,aqi'];
-    const rows = dummyAQIData.map(d => `${d.lat},${d.lng},${d.aqi}`);
-    const csv = header.concat(rows).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `dummy_aqi_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  };
-
   // Very small demo 'prediction' based on simple moving average of nearby dummy points
   const predictAQIInHours = (hours: number) => {
     if (!dummyAQIData || dummyAQIData.length === 0) return null;
@@ -124,56 +96,17 @@ export default function Home() {
     return Math.max(0, median + diurnal + Math.round((Math.random() - 0.5) * 8));
   };
 
-  // Carbon Footprint Calculator
-  const calculateCarbonFootprint = () => {
-    // Emission factors (kg CO2 per unit)
-    const transportFactors = {
-      car: 0.12, // kg CO2 per km
-      bus: 0.04,
-      train: 0.03,
-      bike: 0,
-      walk: 0
-    };
-
-    const meatFactor = 7.0; // kg CO2 per serving per week
-    const electricityFactor = 0.4; // kg CO2 per kWh
-    const wasteFactor = 0.5; // kg CO2 per kg waste per week
-    const airTravelFactor = 200; // kg CO2 per flight per year
-
-    // Daily calculations
-    const dailyTransport = commuteDistance * transportFactors[transportMode as keyof typeof transportFactors];
-    const dailyMeat = (meatConsumption / 7) * meatFactor;
-    const dailyElectricity = (electricityUsage / 30) * electricityFactor;
-    const dailyWaste = (wasteGeneration / 7) * wasteFactor;
-    const dailyAirTravel = airTravel / 365;
-
-    const dailyTotal = dailyTransport + dailyMeat + dailyElectricity + dailyWaste + dailyAirTravel;
-
-    return {
-      daily: Math.round(dailyTotal * 10) / 10,
-      weekly: Math.round(dailyTotal * 7 * 10) / 10,
-      monthly: Math.round(dailyTotal * 30 * 10) / 10,
-      goal: carbonGoal
-    };
-  };
-
-  const currentCarbonFootprint = calculateCarbonFootprint();
-
-  // Notification generation / bell handled by NavBar
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white">
-
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Hero Section */}
         <section className="text-center py-12">
-          <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-            Revolutionizing Air Quality Monitoring
-          </h2>
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+            Air Quality Dashboard
+          </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Harnessing NASA's TEMPO mission data to provide real-time air quality forecasts,
-            integrating ground measurements and weather data for better public health decisions.
-            Special focus on respiratory health and carbon footprint awareness.
+            Real-time air quality monitoring powered by NASA's TEMPO mission data.
+            Stay informed about air pollution levels and protect your health.
           </p>
         </section>
 
@@ -235,42 +168,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Air Quality Map */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <h3 className="text-2xl font-semibold mb-6">Air Quality Map</h3>
-          <AQIMap
-            userLocation={userLocation}
-            dummyAQIData={dummyAQIData}
-            getAQIColor={getAQIColor}
-            getAQIDescription={getAQIDescription}
-          />
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-            <div>
-              <button onClick={downloadCSV} className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded text-white">Download Dummy AQI CSV</button>
-            </div>
-            <div className="col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {[1,3,6].map(h => (
-                <div key={h} className="p-3 bg-white/5 rounded flex items-center justify-between">
-                  <div>
-                    <div className="text-sm">In {h}h</div>
-                    <div className="font-semibold text-lg">{predictAQIInHours(h) ?? '—'}</div>
-                    <div className="text-xs text-gray-300">{getAQIDescription(predictAQIInHours(h) ?? 0)}</div>
-                  </div>
-                  <div className="w-6 h-6 rounded-full" style={{ backgroundColor: getAQIColor(predictAQIInHours(h) ?? 0) }} />
-                </div>
-              ))}
-            </div>
-          </div>
-          <p className="text-sm text-gray-400 mt-4 text-center">
-            Real-time AQI levels across your area (dummy data based on TEMPO mission)
-          </p>
-        </section>
-
-        {/* Top Spots Panel */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <TopSpots dummyAQIData={dummyAQIData} getAQIColor={getAQIColor} />
-        </section>
-
         {/* Air Quality Trends */}
         <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
@@ -303,237 +200,25 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Health Risk Assessment */}
+        {/* Quick Actions */}
         <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <h3 className="text-2xl font-semibold mb-6 flex items-center">
-            <Activity className="w-8 h-8 mr-3 text-red-400" />
-            Health Risk Assessment
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold">Current Risk Level</h4>
-              <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-green-400 font-semibold">Low Risk</span>
-                  <Shield className="w-6 h-6 text-green-400" />
-                </div>
-                <p className="text-sm mt-2 text-gray-300">
-                  Current AQI (42) poses minimal health risks for most people.
-                </p>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold">Vulnerable Groups</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 bg-yellow-500/20 rounded">
-                  <span className="text-sm">Children</span>
-                  <span className="text-yellow-400 text-sm">Monitor</span>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-orange-500/20 rounded">
-                  <span className="text-sm">Elderly</span>
-                  <span className="text-orange-400 text-sm">Caution</span>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-red-500/20 rounded">
-                  <span className="text-sm">Asthma/Respiratory</span>
-                  <span className="text-red-400 text-sm">High Risk</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Health Suggestions for Breathing Conditions */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <h3 className="text-2xl font-semibold mb-6 flex items-center">
-            <Heart className="w-8 h-8 mr-3 text-red-400" />
-            Health Suggestions for Breathing Conditions
-          </h3>
-          <div className="space-y-4">
-            {healthSuggestions.map((suggestion, index) => (
-              <div key={index} className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-                <div className="flex items-start">
-                  <Eye className="w-5 h-5 mr-3 mt-0.5 text-blue-400 flex-shrink-0" />
-                  <p className="text-sm">{suggestion}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Carbon Footprint Tracker */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <h3 className="text-2xl font-semibold mb-6 flex items-center">
-            <Zap className="w-8 h-8 mr-3 text-yellow-400" />
-            Carbon Footprint Calculator
-          </h3>
-
-          {/* Calculator Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            {/* Daily Commute */}
-            <div className="bg-white/5 rounded-lg p-4">
-              <label className="block text-sm font-medium mb-2">Daily Commute Distance</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  value={commuteDistance || ''}
-                  onChange={(e) => setCommuteDistance(Number(e.target.value) || 0)}
-                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white placeholder-white/50"
-                  min="0"
-                  step="1"
-                  placeholder="0"
-                />
-                <span className="text-sm text-gray-300">km</span>
-              </div>
-            </div>
-
-            {/* Transportation Mode */}
-            <div className="bg-white/5 rounded-lg p-4">
-              <label className="block text-sm font-medium mb-2">Transportation Mode</label>
-              <select
-                value={transportMode}
-                onChange={(e) => setTransportMode(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white"
-                style={{
-                  color: 'white',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                }}
-              >
-                <option value="car" style={{ color: 'black', backgroundColor: 'white' }}>🚗 Car</option>
-                <option value="bus" style={{ color: 'black', backgroundColor: 'white' }}>🚌 Bus</option>
-                <option value="train" style={{ color: 'black', backgroundColor: 'white' }}>🚆 Train</option>
-                <option value="bike" style={{ color: 'black', backgroundColor: 'white' }}>🚴‍♂️ Bike</option>
-                <option value="walk" style={{ color: 'black', backgroundColor: 'white' }}>🚶‍♂️ Walk</option>
-              </select>
-            </div>
-
-            {/* Meat Consumption */}
-            <div className="bg-white/5 rounded-lg p-4">
-              <label className="block text-sm font-medium mb-2">Meat Servings/Week</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  value={meatConsumption || ''}
-                  onChange={(e) => setMeatConsumption(Number(e.target.value) || 0)}
-                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white placeholder-white/50"
-                  min="0"
-                  step="1"
-                  placeholder="0"
-                />
-                <span className="text-sm text-gray-300">servings</span>
-              </div>
-            </div>
-
-            {/* Electricity Usage */}
-            <div className="bg-white/5 rounded-lg p-4">
-              <label className="block text-sm font-medium mb-2">Electricity Usage</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  value={electricityUsage || ''}
-                  onChange={(e) => setElectricityUsage(Number(e.target.value) || 0)}
-                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white placeholder-white/50"
-                  min="0"
-                  step="10"
-                  placeholder="0"
-                />
-                <span className="text-sm text-gray-300">kWh/month</span>
-              </div>
-            </div>
-
-            {/* Waste Generation */}
-            <div className="bg-white/5 rounded-lg p-4">
-              <label className="block text-sm font-medium mb-2">Waste Generation</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  value={wasteGeneration || ''}
-                  onChange={(e) => setWasteGeneration(Number(e.target.value) || 0)}
-                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white placeholder-white/50"
-                  min="0"
-                  step="0.5"
-                  placeholder="0"
-                />
-                <span className="text-sm text-gray-300">kg/week</span>
-              </div>
-            </div>
-
-            {/* Air Travel */}
-            <div className="bg-white/5 rounded-lg p-4">
-              <label className="block text-sm font-medium mb-2">Air Travel</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  value={airTravel || ''}
-                  onChange={(e) => setAirTravel(Number(e.target.value) || 0)}
-                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white placeholder-white/50"
-                  min="0"
-                  step="1"
-                  placeholder="0"
-                />
-                <span className="text-sm text-gray-300">flights/year</span>
-              </div>
-            </div>
-
-            {/* Carbon Goal */}
-            <div className="bg-white/5 rounded-lg p-4">
-              <label className="block text-sm font-medium mb-2">Monthly Carbon Goal</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  value={carbonGoal || ''}
-                  onChange={(e) => setCarbonGoal(Number(e.target.value) || 0)}
-                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white placeholder-white/50"
-                  min="0"
-                  step="10"
-                  placeholder="300"
-                />
-                <span className="text-sm text-gray-300">kg CO₂</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Results Display */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold">{currentCarbonFootprint.daily}kg</div>
-              <div className="text-sm opacity-80">Daily CO₂</div>
-            </div>
-            <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold">{currentCarbonFootprint.weekly}kg</div>
-              <div className="text-sm opacity-80">Weekly CO₂</div>
-            </div>
-            <div className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold">{currentCarbonFootprint.monthly}kg</div>
-              <div className="text-sm opacity-80">Monthly CO₂</div>
-            </div>
-            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold">{currentCarbonFootprint.goal}kg</div>
-              <div className="text-sm opacity-80">Monthly Goal</div>
-            </div>
-          </div>
-
-          {/* Progress Indicator */}
-          <div className="mt-6">
-            <div className="flex justify-between text-sm mb-2">
-              <span>Progress to Goal</span>
-              <span>{Math.round((currentCarbonFootprint.monthly / currentCarbonFootprint.goal) * 100)}%</span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-3">
-              <div
-                className={`h-3 rounded-full transition-all duration-300 ${
-                  currentCarbonFootprint.monthly <= currentCarbonFootprint.goal
-                    ? 'bg-green-500'
-                    : 'bg-red-500'
-                }`}
-                style={{
-                  width: `${Math.min((currentCarbonFootprint.monthly / currentCarbonFootprint.goal) * 100, 100)}%`
-                }}
-              ></div>
-            </div>
-            <p className="text-sm text-gray-400 mt-4 text-center">
-              Adjust your lifestyle choices above to see real-time changes in your carbon footprint.
-              Lower emissions mean cleaner air for everyone, especially those with respiratory conditions.
-            </p>
+          <h3 className="text-2xl font-semibold mb-6">Quick Actions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/maps" className="p-6 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl text-center hover:from-blue-600 hover:to-cyan-600 transition-all">
+              <MapPin className="w-12 h-12 mx-auto mb-4" />
+              <h4 className="text-lg font-semibold mb-2">View Maps</h4>
+              <p className="text-sm opacity-80">Explore air quality maps and data</p>
+            </a>
+            <a href="/health" className="p-6 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl text-center hover:from-red-600 hover:to-pink-600 transition-all">
+              <Heart className="w-12 h-12 mx-auto mb-4" />
+              <h4 className="text-lg font-semibold mb-2">Health Tips</h4>
+              <p className="text-sm opacity-80">Health recommendations and alerts</p>
+            </a>
+            <a href="/carbon" className="p-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl text-center hover:from-green-600 hover:to-emerald-600 transition-all">
+              <Zap className="w-12 h-12 mx-auto mb-4" />
+              <h4 className="text-lg font-semibold mb-2">Carbon Tracker</h4>
+              <p className="text-sm opacity-80">Monitor your carbon footprint</p>
+            </a>
           </div>
         </section>
 
@@ -551,32 +236,6 @@ export default function Home() {
                   <span className="text-sm font-semibold">{level.level}</span>
                 </div>
                 <p className="text-xs text-gray-300">{level.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Emergency Contacts */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <h3 className="text-2xl font-semibold mb-6 flex items-center">
-            <Phone className="w-8 h-8 mr-3 text-red-400" />
-            Emergency Contacts
-          </h3>
-          <div className="space-y-4">
-            {emergencyContacts.map((contact, index) => (
-              <div key={index} className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold text-red-400">{contact.name}</h4>
-                    <p className="text-sm text-gray-300">{contact.description}</p>
-                  </div>
-                  <a
-                    href={`tel:${contact.number}`}
-                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                  >
-                    {contact.number}
-                  </a>
-                </div>
               </div>
             ))}
           </div>

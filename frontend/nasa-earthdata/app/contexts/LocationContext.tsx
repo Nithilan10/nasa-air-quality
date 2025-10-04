@@ -35,12 +35,31 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
         // Generate dummy AQI data points around user location
         const points: Point[] = [];
-        for (let i = 0; i < 20; i++) {
-          const latOffset = (Math.random() - 0.5) * 0.1;
-          const lngOffset = (Math.random() - 0.5) * 0.1;
-          const aqi = Math.floor(Math.random() * 100) + 20;
+        
+        // Generate more points with larger radius for better visualization
+        for (let i = 0; i < 80; i++) {
+          const latOffset = (Math.random() - 0.5) * 0.8; // Increased radius
+          const lngOffset = (Math.random() - 0.5) * 0.8;
+          
+          // Create varied AQI values with some high pollution clusters
+          let aqi;
+          if (i < 10) {
+            // High pollution industrial areas
+            aqi = Math.floor(Math.random() * 60) + 140; // 140-200
+          } else if (i < 25) {
+            // Moderate-high pollution (traffic areas)
+            aqi = Math.floor(Math.random() * 40) + 100; // 100-140
+          } else if (i < 45) {
+            // Moderate pollution
+            aqi = Math.floor(Math.random() * 50) + 60; // 60-110
+          } else {
+            // Good to moderate air quality
+            aqi = Math.floor(Math.random() * 40) + 20; // 20-60
+          }
+          
           points.push({ lat: latitude + latOffset, lng: longitude + lngOffset, aqi });
         }
+        
         setDummyAQIData(points);
 
         // Reverse geocode to a friendly name (best-effort)
@@ -70,12 +89,31 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         setUserLocation([34.0522, -118.2437]);
         setUserCity('Los Angeles, CA');
         const points: Point[] = [];
-        for (let i = 0; i < 20; i++) {
-          const latOffset = (Math.random() - 0.5) * 0.1;
-          const lngOffset = (Math.random() - 0.5) * 0.1;
-          const aqi = Math.floor(Math.random() * 100) + 20;
+        
+        // Generate more points with larger radius for better visualization
+        for (let i = 0; i < 80; i++) {
+          const latOffset = (Math.random() - 0.5) * 0.8; // Increased radius
+          const lngOffset = (Math.random() - 0.5) * 0.8;
+          
+          // Create varied AQI values with some high pollution clusters
+          let aqi;
+          if (i < 10) {
+            // High pollution industrial areas
+            aqi = Math.floor(Math.random() * 60) + 140; // 140-200
+          } else if (i < 25) {
+            // Moderate-high pollution (traffic areas)
+            aqi = Math.floor(Math.random() * 40) + 100; // 100-140
+          } else if (i < 45) {
+            // Moderate pollution
+            aqi = Math.floor(Math.random() * 50) + 60; // 60-110
+          } else {
+            // Good to moderate air quality
+            aqi = Math.floor(Math.random() * 40) + 20; // 20-60
+          }
+          
           points.push({ lat: 34.0522 + latOffset, lng: -118.2437 + lngOffset, aqi });
         }
+        
         setDummyAQIData(points);
       }
     );

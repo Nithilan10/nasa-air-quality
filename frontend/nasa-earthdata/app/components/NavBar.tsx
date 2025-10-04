@@ -87,16 +87,12 @@ export default function NavBar() {
         </div>
 
         {/* Center: Nav links */}
-  <nav className="flex-1 hidden md:flex items-center justify-center space-x-8">
+        <nav className="flex-1 hidden md:flex items-center justify-center space-x-8">
           <Link href="/" className="text-sm text-white/70 hover:text-white">Dashboard</Link>
-          <Link href="/map" className="text-sm text-white/70 hover:text-white">Map</Link>
-          <Link href="/data" className="text-sm text-white/70 hover:text-white">Data</Link>
-          <Link href="/alerts" className="text-sm text-white/70 hover:text-white">Alerts</Link>
+          <Link href="/maps" className="text-sm text-white/70 hover:text-white">Maps</Link>
+          <Link href="/health" className="text-sm text-white/70 hover:text-white">Health</Link>
           <Link href="/carbon" className="text-sm text-white/70 hover:text-white">Carbon</Link>
-          <Link href="/insights" className="text-sm text-white/70 hover:text-white">Insights</Link>
-        </nav>
-
-        {/* Right: Location + Notifications */}
+        </nav>        {/* Right: Location + Notifications */}
   <div className="flex items-center space-x-5 ml-auto min-w-[240px] justify-end">
           <div className="hidden md:flex items-center space-x-2 text-sm text-white/80">
             <MapPin className="w-5 h-5" />
