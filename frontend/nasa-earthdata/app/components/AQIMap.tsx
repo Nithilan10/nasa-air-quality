@@ -83,7 +83,19 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
   }
 
   return (
-    <MapContainer center={userLocation} zoom={12} style={{ height: '400px', width: '100%', borderRadius: '12px' }}>
+    <div className="relative rounded-xl overflow-hidden" style={{ borderRadius: 12 }}>
+      {/* Floating legend */}
+      <div className="absolute z-50 top-4 left-4 bg-black/50 text-white rounded-lg p-3 text-xs backdrop-blur-sm w-44">
+        <div className="font-semibold mb-2">AQI Legend</div>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between"><span>Good</span><span style={{ color: '#00e400' }}>0-50</span></div>
+          <div className="flex items-center justify-between"><span>Moderate</span><span style={{ color: '#ffff00' }}>51-100</span></div>
+          <div className="flex items-center justify-between"><span>Unhealthy SG</span><span style={{ color: '#ff7e00' }}>101-150</span></div>
+          <div className="flex items-center justify-between"><span>Unhealthy</span><span style={{ color: '#ff0000' }}>151-200</span></div>
+        </div>
+      </div>
+
+      <MapContainer center={userLocation} zoom={12} style={{ height: '400px', width: '100%' }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -120,5 +132,8 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
         </Circle>
       ))}
     </MapContainer>
+      {/* subtle gradient overlay to add 'heatmap' feel (purely visual) */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent mix-blend-overlay" />
+    </div>
   );
 }
