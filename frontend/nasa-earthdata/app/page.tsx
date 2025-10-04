@@ -4,6 +4,7 @@ import { AlertTriangle, Cloud, Droplets, Wind, MapPin, TrendingUp, Heart, Thermo
 import { useEffect, useState, useRef, useContext } from 'react';
 import dynamic from 'next/dynamic';
 import TopSpots from './components/TopSpots';
+import { LocationContext } from './contexts/LocationContext';
 
 // Dynamically import the map component to avoid SSR issues
 const AQIMap = dynamic(() => import('./components/AQIMap'), {
