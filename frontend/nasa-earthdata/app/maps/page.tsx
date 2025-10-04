@@ -1,10 +1,30 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { MapPin, Download, Layers, Thermometer, Eye, Zap, Cloud, Droplets, Wind } from 'lucide-react';
+import { MapPin, Download, Layers, Thermometer, Eye, Zap, Cloud, Droplets, Wind, Search } from 'lucide-react';
 import TopSpots from '../components/TopSpots';
 import { LocationContext } from '../contexts/LocationContext';
+import SearchBar from '../components/maps/SearchBar';
+import MapTypeSelector from '../components/maps/MapTypeSelector';
+import SearchedCitiesComparison from '../components/maps/SearchedCitiesComparison';
+import MapLegend from '../components/maps/MapLegend';
+import ForecastItem from '../components/maps/ForecastItem';
+import { getAQIColor, getAQIDescription } from '../utils/aqiUtils';
+
+interface CityAQIData {
+  location: string;
+  aqi: number;
+  category: string;
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  wind_speed: number;
+  pm25: number;
+  o3: number;
+  latitude: number;
+  longitude: number;
+}
 
 // Dynamically import the map component to avoid SSR issues
 const AQIMap = dynamic(() => import('../components/AQIMap'), {
@@ -28,23 +48,172 @@ const mapTypes = [
 export default function MapsPage() {
   const { userLocation, dummyAQIData } = useContext(LocationContext);
   const [selectedMapType, setSelectedMapType] = useState('aqi');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchedCities, setSearchedCities] = useState<CityAQIData[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [suggestionTimeout, setSuggestionTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const getAQIColor = (aqi: number) => {
-    if (aqi <= 50) return '#00e400'; // Good - green
-    if (aqi <= 100) return '#ffff00'; // Moderate - yellow
-    if (aqi <= 150) return '#ff7e00'; // Unhealthy for sensitive groups - orange
-    if (aqi <= 200) return '#ff0000'; // Unhealthy - red
-    if (aqi <= 300) return '#8f3f97'; // Very unhealthy - purple
-    return '#7e0023'; // Hazardous - maroon
+  const searchCity = async (cityName: string) => {
+    if (!cityName.trim()) return;
+    setIsSearching(true);
+    setSearchError(null);
+    try {
+      // Since we don't have the backend, use dummy data
+      // In real implementation, this would be:
+      // const response = await fetch('/api/v1/air-quality/location', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ location: cityName, ...weatherData })
+      // });
+      // const data = await response.json();
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Dummy data based on city name
+      const dummyData: CityAQIData = {
+        location: cityName,
+        aqi: Math.floor(Math.random() * 150) + 20, // Random AQI 20-170
+        category: 'Good', // Will be set below
+        temperature: Math.floor(Math.random() * 30) + 10, // 10-40°C
+        humidity: Math.floor(Math.random() * 50) + 30, // 30-80%
+        pressure: 1013 + Math.floor(Math.random() * 20) - 10, // 1003-1023
+        wind_speed: Math.floor(Math.random() * 20) + 5, // 5-25 mph
+        pm25: Math.floor(Math.random() * 50) + 5, // 5-55
+        o3: Math.floor(Math.random() * 50) + 10, // 10-60
+        latitude: 40 + Math.random() * 20 - 10, // Random lat around US
+        longitude: -120 + Math.random() * 40 - 20, // Random lng around US
+      };
+
+      // Set category based on AQI
+      if (dummyData.aqi <= 50) dummyData.category = 'Good';
+      else if (dummyData.aqi <= 100) dummyData.category = 'Moderate';
+      else if (dummyData.aqi <= 150) dummyData.category = 'Unhealthy for Sensitive Groups';
+      else dummyData.category = 'Unhealthy';
+
+      // Check if city already exists
+      const existingIndex = searchedCities.findIndex(city => city.location.toLowerCase() === cityName.toLowerCase());
+      if (existingIndex >= 0) {
+        // Update existing
+        const updatedCities = [...searchedCities];
+        updatedCities[existingIndex] = dummyData;
+        setSearchedCities(updatedCities);
+      } else {
+        // Add new
+        setSearchedCities(prev => [...prev, dummyData]);
+      }
+      setSearchQuery('');
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchError('Failed to fetch air quality data. Please try again.');
+    } finally {
+      setIsSearching(false);
+    }
   };
 
-  const getAQIDescription = (aqi: number) => {
-    if (aqi <= 50) return 'Good';
-    if (aqi <= 100) return 'Moderate';
-    if (aqi <= 150) return 'Unhealthy for Sensitive Groups';
-    if (aqi <= 200) return 'Unhealthy';
-    if (aqi <= 300) return 'Very Unhealthy';
-    return 'Hazardous';
+  const removeCity = (location: string) => {
+    setSearchedCities(prev => prev.filter(city => city.location !== location));
+  };
+
+  const fetchSuggestions = async (query: string) => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsLoadingSuggestions(true);
+    try {
+      console.log('Fetching suggestions for:', query);
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=US&addressdetails=1&dedupe=1`
+      );
+      const data = await response.json();
+      console.log('Suggestions received:', data);
+      setSuggestions(data);
+      setShowSuggestions(data.length > 0);
+    } catch (error) {
+      console.error('Failed to fetch suggestions:', error);
+      setSuggestions([]);
+      setShowSuggestions(false);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
+  const handleSuggestionSelect = (suggestion: any) => {
+    console.log('Suggestion selected:', suggestion);
+    const cityName = suggestion.display_name.split(',')[0]; // Get the main city name
+    setSearchQuery(cityName);
+    setShowSuggestions(false);
+    searchCity(cityName);
+  };
+
+  const handleInputChange = (value: string) => {
+    setSearchQuery(value);
+    setSearchError(null);
+
+    // Clear existing timeout
+    if (suggestionTimeout) {
+      clearTimeout(suggestionTimeout);
+    }
+
+    // Set new timeout for debounced search
+    const timeout = setTimeout(() => {
+      fetchSuggestions(value);
+    }, 300); // 300ms debounce
+
+    setSuggestionTimeout(timeout);
+  };
+
+  const handleInputFocus = () => {
+    if (searchQuery.length >= 2 && suggestions.length > 0) {
+      setShowSuggestions(true);
+    }
+  };
+
+  // Test function to verify API is working
+  const testAPI = async () => {
+    try {
+      console.log('Testing Nominatim API...');
+      const testQuery = 'New York';
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(testQuery)}&limit=3&countrycodes=US`;
+      console.log('API URL:', url);
+
+      const response = await fetch(url);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('API Test Result:', data);
+      console.log('Number of results:', data.length);
+
+      // Also test with the actual fetchSuggestions function
+      console.log('Testing fetchSuggestions with "New York"...');
+      await fetchSuggestions('New York');
+
+      return data;
+    } catch (error) {
+      console.error('API Test Failed:', error);
+      return null;
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setShowSuggestions(false);
+      searchCity(searchQuery);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
   };
 
   // CSV export of dummy AQI data
@@ -82,10 +251,22 @@ export default function MapsPage() {
           <h1 className="text-5xl font-bold mb-4 text-blue-100">
             Air Quality Maps
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
             Interactive maps showing real-time air quality data from NASA's TEMPO mission.
             Explore different visualization types and download data for analysis.
           </p>
+          {/* Search Bar */}
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchQueryChange={handleInputChange}
+            onSearchSubmit={searchCity}
+            isSearching={isSearching}
+            searchError={searchError}
+            suggestions={suggestions}
+            showSuggestions={showSuggestions}
+            onSuggestionSelect={handleSuggestionSelect}
+            isLoadingSuggestions={isLoadingSuggestions}
+          />
         </section>
 
         {/* Current Air Quality Summary */}
@@ -118,35 +299,20 @@ export default function MapsPage() {
           </div>
         </section>
 
+        {/* Searched Cities Comparison */}
+        {searchedCities.length > 0 && (
+          <SearchedCitiesComparison
+            searchedCities={searchedCities}
+            onRemoveCity={removeCity}
+          />
+        )}
+
         {/* Map Type Selector */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <h3 className="text-2xl font-semibold mb-6 flex items-center">
-            <Layers className="w-8 h-8 mr-3 text-blue-400" />
-            Map Visualization Types
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mapTypes.map((type) => {
-              const Icon = type.icon;
-              return (
-                <button
-                  key={type.id}
-                  onClick={() => setSelectedMapType(type.id)}
-                  className={`p-6 rounded-xl border-2 transition-all ${
-                    selectedMapType === type.id
-                      ? 'border-cyan-400 bg-cyan-400/20'
-                      : 'border-white/20 bg-white/5 hover:bg-white/10'
-                  }`}
-                >
-                  <Icon className={`w-12 h-12 mx-auto mb-4 ${
-                    selectedMapType === type.id ? 'text-cyan-400' : 'text-white/70'
-                  }`} />
-                  <h4 className="text-lg font-semibold mb-2">{type.name}</h4>
-                  <p className="text-sm text-gray-300">{type.description}</p>
-                </button>
-              );
-            })}
-          </div>
-        </section>
+        <MapTypeSelector
+          mapTypes={mapTypes}
+          selectedMapType={selectedMapType}
+          onMapTypeChange={setSelectedMapType}
+        />
 
         {/* Air Quality Map */}
         <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
@@ -157,6 +323,10 @@ export default function MapsPage() {
             getAQIColor={getAQIColor}
             getAQIDescription={getAQIDescription}
             mapType={selectedMapType}
+            onCitySelect={(cityName, lat, lng) => {
+              // Automatically search for the selected city
+              searchCity(cityName);
+            }}
           />
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
             <div>
@@ -166,16 +336,18 @@ export default function MapsPage() {
               </button>
             </div>
             <div className="col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {[1,3,6].map(h => (
-                <div key={h} className="p-3 bg-white/5 rounded flex items-center justify-between">
-                  <div>
-                    <div className="text-sm">In {h}h</div>
-                    <div className="font-semibold text-lg">{predictAQIInHours(h) ?? '—'}</div>
-                    <div className="text-xs text-gray-300">{getAQIDescription(predictAQIInHours(h) ?? 0)}</div>
-                  </div>
-                  <div className="w-6 h-6 rounded-full" style={{ backgroundColor: getAQIColor(predictAQIInHours(h) ?? 0) }} />
-                </div>
-              ))}
+              {[1,3,6].map(h => {
+                const predictedAQI = predictAQIInHours(h);
+                return (
+                  <ForecastItem
+                    key={h}
+                    hours={h}
+                    aqi={predictedAQI}
+                    description={getAQIDescription(predictedAQI ?? 0)}
+                    color={getAQIColor(predictedAQI ?? 0)}
+                  />
+                );
+              })}
             </div>
           </div>
           <p className="text-sm text-gray-400 mt-4 text-center">
@@ -191,49 +363,7 @@ export default function MapsPage() {
         </section>
 
         {/* Map Legend */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-          <h3 className="text-2xl font-semibold mb-6">Map Legend & Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="text-lg font-semibold mb-4">AQI Color Scale</h4>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#00e400' }}></div>
-                  <span className="text-sm">0-50: Good</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ffff00' }}></div>
-                  <span className="text-sm">51-100: Moderate</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ff7e00' }}></div>
-                  <span className="text-sm">101-150: Unhealthy for Sensitive Groups</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ff0000' }}></div>
-                  <span className="text-sm">151-200: Unhealthy</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#8f3f97' }}></div>
-                  <span className="text-sm">201-300: Very Unhealthy</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#7e0023' }}></div>
-                  <span className="text-sm">301+: Hazardous</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Data Sources</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>• NASA's TEMPO Mission satellite data</li>
-                <li>• Ground-based air quality monitors</li>
-                <li>• Weather station integrations</li>
-                <li>• Real-time pollutant measurements</li>
-              </ul>
-            </div>
-          </div>
-        </section>
+        <MapLegend />
       </main>
 
       {/* Footer */}

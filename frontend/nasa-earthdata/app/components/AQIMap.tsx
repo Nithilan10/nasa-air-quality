@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents } from 'react-leaflet';
 import { MapPin } from 'lucide-react';
 
-// NOTE: We intentionally avoid importing Leaflet CSS and running the
-// L.Icon fixes at module top-level because that can trigger DOM access
-// during server-side rendering or before the browser DOM is available.
-// Instead we dynamically import them inside a client-only effect and
-// render the MapContainer only after mount.
+// Component to handle map events
+function MapClickHandler({ onMapClick }: { onMapClick: (e: any) => void }) {
+  useMapEvents({
+    click: onMapClick,
+  });
+  return null;
+}
 
 interface AQIMapProps {
   userLocation: [number, number] | null;
@@ -16,10 +18,48 @@ interface AQIMapProps {
   getAQIColor: (aqi: number) => string;
   getAQIDescription: (aqi: number) => string;
   mapType?: string;
+  onCitySelect?: (cityName: string, lat: number, lng: number) => void;
 }
 
-export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQIDescription, mapType = 'aqi' }: AQIMapProps) {
+export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQIDescription, mapType = 'aqi', onCitySelect }: AQIMapProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+
+  const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`
+      );
+      const data = await response.json();
+
+      // Extract city name from the response
+      const address = data.address || {};
+      const city = address.city || address.town || address.village || address.municipality ||
+                   address.county || address.state || 'Unknown Location';
+
+      return city;
+    } catch (error) {
+      console.error('Reverse geocoding failed:', error);
+      return 'Unknown Location';
+    }
+  };
+
+  const handleMapClick = async (e: any) => {
+    const { lat, lng } = e.latlng;
+    setSelectedLocation([lat, lng]);
+    setIsGeocoding(true);
+
+    const cityName = await reverseGeocode(lat, lng);
+    setSelectedCity(cityName);
+    setIsGeocoding(false);
+
+    // Call the callback if provided
+    if (onCitySelect) {
+      onCitySelect(cityName, lat, lng);
+    }
+  };
 
   useEffect(() => {
     // Only run in browser
@@ -92,6 +132,9 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
           {mapType === 'heatmap' && 'Heat Map'}
           {mapType === 'pollutants' && 'Pollution Sources'}
         </div>
+        <div className="text-xs text-gray-300 mb-2">
+          Click anywhere on the map to select a city and get its air quality data.
+        </div>
         {mapType === 'aqi' && (
           <div className="space-y-1">
             <div className="flex items-center justify-between"><span>Good</span><span style={{ color: '#00e400' }}>0-50</span></div>
@@ -130,6 +173,7 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
       </div>
 
       <MapContainer center={userLocation} zoom={10} style={{ height: '400px', width: '100%' }}>
+      <MapClickHandler onMapClick={handleMapClick} />
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -144,6 +188,36 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
           </div>
         </Popup>
       </Marker>
+
+      {/* Selected location marker */}
+      {selectedLocation && (
+        <Marker position={selectedLocation}>
+          <Popup>
+            <div className="text-center">
+              <strong>Selected Location</strong>
+              <br />
+              {isGeocoding ? (
+                <div className="text-sm text-gray-500">Getting city name...</div>
+              ) : (
+                <div>
+                  <div className="font-semibold">{selectedCity}</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Click to search air quality
+                  </div>
+                  {onCitySelect && (
+                    <button
+                      onClick={() => onCitySelect(selectedCity || 'Unknown', selectedLocation[0], selectedLocation[1])}
+                      className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                    >
+                      Search AQI
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      )}
 
       {/* Render data based on map type */}
       {mapType === 'aqi' && dummyAQIData.map((point, index) => (
