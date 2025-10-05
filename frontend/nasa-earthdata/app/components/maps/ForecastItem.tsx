@@ -9,7 +9,7 @@ interface ForecastItemProps {
 
 export default function ForecastItem({ hours, aqi, description, color }: ForecastItemProps) {
   return (
-    <div className="p-3 bg-white/5 rounded flex items-center justify-between">
+  <div className="p-3 bg-slate-800/35 rounded flex items-center justify-between border border-white/6">
       <div>
         <div className="text-sm">In {hours}h</div>
         <div className="font-semibold text-lg">{aqi ?? '—'}</div>

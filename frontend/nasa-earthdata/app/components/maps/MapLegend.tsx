@@ -4,8 +4,8 @@ import { Info } from 'lucide-react';
 
 export default function MapLegend() {
   return (
-    <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-      <h3 className="text-2xl font-semibold mb-6">Map Legend & Information</h3>
+  <section className="bg-gradient-to-br from-slate-900/65 to-slate-800/50 border border-white/6 rounded-2xl p-8">
+      <h3 className="text-2xl font-semibold mb-6 text-white">Map Legend & Information</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h4 className="text-lg font-semibold mb-4">AQI Color Scale</h4>
@@ -37,7 +37,7 @@ export default function MapLegend() {
           </div>
         </div>
         <div>
-          <h4 className="text-lg font-semibold mb-4">Data Sources</h4>
+          <h4 className="text-lg font-semibold mb-4 text-white">Data Sources</h4>
           <ul className="space-y-2 text-sm text-gray-300">
             <li>• NASA's TEMPO Mission satellite data</li>
             <li>• Ground-based air quality monitors</li>

@@ -126,7 +126,7 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
   return (
     <div className="relative rounded-xl overflow-hidden" style={{ borderRadius: 12 }}>
       {/* Floating legend */}
-      <div className="absolute z-50 top-4 left-4 bg-black/50 text-white rounded-lg p-3 text-xs backdrop-blur-sm w-44">
+  <div className="absolute z-50 top-4 left-4 bg-slate-800/70 text-white rounded-lg p-3 text-xs backdrop-blur-sm w-44 border border-white/6">
         <div className="font-semibold mb-2">
           {mapType === 'aqi' && 'AQI Legend'}
           {mapType === 'heatmap' && 'Heat Map'}
@@ -231,13 +231,12 @@ export default function AQIMap({ userLocation, dummyAQIData, getAQIColor, getAQI
             fillOpacity: 0.6,
           }}
         >
-          <Popup>
-            <div className="text-center">
-              <strong>AQI: {point.aqi}</strong>
-              <br />
-              {getAQIDescription(point.aqi)}
-            </div>
-          </Popup>
+            <Popup>
+              <div className="text-center text-sm">
+                <strong>AQI: {point.aqi}</strong>
+                <div className="text-xs text-gray-300 mt-1">{getAQIDescription(point.aqi)}</div>
+              </div>
+            </Popup>
         </Circle>
       ))}
 

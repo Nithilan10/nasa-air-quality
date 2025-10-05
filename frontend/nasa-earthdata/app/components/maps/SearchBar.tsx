@@ -50,7 +50,7 @@ export default function SearchBar({
           onFocus={() => {}} // Could be handled by parent
           onBlur={() => setTimeout(() => {}, 150)} // Could be handled by parent
           placeholder="Search city for air quality..."
-          className="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-3 bg-slate-800/60 backdrop-blur-sm border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
           disabled={isSearching}
         />
         {isSearching && (
@@ -61,8 +61,8 @@ export default function SearchBar({
       </div>
 
       {/* Autocomplete Dropdown */}
-      {showSuggestions && (suggestions.length > 0 || isLoadingSuggestions) && (
-        <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-white/20 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        {showSuggestions && (suggestions.length > 0 || isLoadingSuggestions) && (
+        <div className="absolute z-50 w-full mt-1 bg-slate-800/90 border border-white/10 rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {isLoadingSuggestions ? (
             <div className="px-4 py-3 text-gray-400 text-sm">
               <div className="flex items-center">
@@ -75,7 +75,7 @@ export default function SearchBar({
               <button
                 key={index}
                 onClick={() => onSuggestionSelect(suggestion)}
-                className="w-full text-left px-4 py-3 hover:bg-white/10 focus:bg-white/10 focus:outline-none border-b border-white/10 last:border-b-0 transition-colors"
+                className="w-full text-left px-4 py-3 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none border-b border-white/10 last:border-b-0 transition-colors"
               >
                 <div className="text-white text-sm font-medium">
                   {suggestion.display_name.split(',')[0]}

@@ -92,6 +92,7 @@ export default function NavBar() {
           <Link href="/maps" className="text-sm text-white/70 hover:text-white">Maps</Link>
           <Link href="/health" className="text-sm text-white/70 hover:text-white">Health</Link>
           <Link href="/carbon" className="text-sm text-white/70 hover:text-white">Carbon</Link>
+          <Link href="/visualizations" className="text-sm text-white/70 hover:text-white">Visualizations</Link>
         </nav>        {/* Right: Location + Notifications */}
   <div className="flex items-center space-x-5 ml-auto min-w-[240px] justify-end">
           <div className="hidden md:flex items-center space-x-2 text-sm text-white/80">
@@ -117,10 +118,10 @@ export default function NavBar() {
               <div
                 ref={(el) => { dropdownRef.current = el; }}
                 style={{ position: 'absolute', top: dropdownPos.top, left: dropdownPos.left, width: 320, zIndex: 99999 }}
-                className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/20"
+                className="bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10"
               >
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-800">Air Quality Alerts</h3>
+                <div className="p-4 border-b border-white/6">
+                  <h3 className="text-lg font-semibold text-white">Air Quality Alerts</h3>
                 </div>
                 <div className="max-h-96 overflow-y-auto">
                   {activeNotifications.length === 0 ? (
@@ -130,7 +131,7 @@ export default function NavBar() {
                     </div>
                   ) : (
                     activeNotifications.map((notification) => (
-                      <div key={notification.id} className={`p-4 border-b border-gray-100 last:border-b-0 ${getNotificationStyle(notification.type)}`}>
+                      <div key={notification.id} className={`p-4 border-b border-white/6 last:border-b-0 ${getNotificationStyle(notification.type)}`}>
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-3">
                             {getNotificationIcon(notification.type)}
