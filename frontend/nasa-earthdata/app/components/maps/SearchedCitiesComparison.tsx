@@ -33,7 +33,7 @@ export default function SearchedCitiesComparison({ searchedCities, onRemoveCity 
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {searchedCities.map((city) => (
-          <div key={city.location} className="bg-slate-800 rounded-xl p-6 relative">
+          <div key={`${city.location}-${city.latitude}-${city.longitude}`} className="bg-slate-800 rounded-xl p-6 relative">
             <button
               onClick={() => onRemoveCity(city.location)}
               className="absolute top-2 right-2 text-gray-400 hover:text-red-400 transition-colors"
