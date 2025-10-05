@@ -26,14 +26,14 @@ export default function SearchedCitiesComparison({ searchedCities, onRemoveCity 
   if (searchedCities.length === 0) return null;
 
   return (
-    <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+  <section className="bg-gradient-to-br from-slate-900/65 to-slate-800/50 border border-white/6 rounded-2xl p-8">
       <h3 className="text-2xl font-semibold mb-6 flex items-center">
         <MapPin className="w-8 h-8 mr-3 text-blue-400" />
         City Air Quality Comparison
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {searchedCities.map((city) => (
-          <div key={`${city.location}-${city.latitude}-${city.longitude}`} className="bg-slate-800 rounded-xl p-6 relative">
+          <div key={`${city.location}-${city.latitude}-${city.longitude}`} className="bg-gradient-to-br from-slate-800/45 to-slate-700/30 border border-white/6 rounded-xl p-6 relative shadow-md">
             <button
               onClick={() => onRemoveCity(city.location)}
               className="absolute top-2 right-2 text-gray-400 hover:text-red-400 transition-colors"

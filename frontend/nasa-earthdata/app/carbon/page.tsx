@@ -136,8 +136,8 @@ export default function CarbonPage() {
           </p>
         </section>
 
-        {/* Current Air Quality Summary */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+  {/* Current Air Quality Summary */}
+  {/* <section className="bg-gradient-to-br from-slate-900/65 to-slate-800/50 border border-white/6 rounded-2xl p-6 shadow-lg">
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
             <Cloud className="w-8 h-8 mr-3 text-blue-400" />
             Current Air Quality & Weather
@@ -164,10 +164,10 @@ export default function CarbonPage() {
               <div className="text-sm opacity-80">Wind Speed</div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Carbon Footprint Calculator */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+  <section className="bg-gradient-to-br from-slate-900/75 to-slate-800/65 border border-white/6 rounded-2xl p-6 shadow-lg">
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
             <Zap className="w-8 h-8 mr-3 text-yellow-400" />
             Carbon Footprint Calculator
@@ -176,7 +176,7 @@ export default function CarbonPage() {
           {/* Calculator Inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             {/* Daily Commute */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-slate-800/60 rounded-lg p-4">
               <label className="block text-sm font-medium mb-2">Daily Commute Distance</label>
               <div className="flex items-center space-x-2">
                 <input
@@ -193,7 +193,7 @@ export default function CarbonPage() {
             </div>
 
             {/* Transportation Mode */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-slate-800/60 rounded-lg p-4">
               <label className="block text-sm font-medium mb-2">Transportation Mode</label>
               <select
                 value={transportMode}
@@ -213,7 +213,7 @@ export default function CarbonPage() {
             </div>
 
             {/* Meat Consumption */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-slate-800/60 rounded-lg p-4">
               <label className="block text-sm font-medium mb-2">Meat Servings/Week</label>
               <div className="flex items-center space-x-2">
                 <input
@@ -230,7 +230,7 @@ export default function CarbonPage() {
             </div>
 
             {/* Electricity Usage */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-slate-800/60 rounded-lg p-4">
               <label className="block text-sm font-medium mb-2">Electricity Usage</label>
               <div className="flex items-center space-x-2">
                 <input
@@ -247,7 +247,7 @@ export default function CarbonPage() {
             </div>
 
             {/* Waste Generation */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-slate-800/60 rounded-lg p-4">
               <label className="block text-sm font-medium mb-2">Waste Generation</label>
               <div className="flex items-center space-x-2">
                 <input
@@ -264,7 +264,7 @@ export default function CarbonPage() {
             </div>
 
             {/* Air Travel */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-slate-800/60 rounded-lg p-4">
               <label className="block text-sm font-medium mb-2">Air Travel</label>
               <div className="flex items-center space-x-2">
                 <input
@@ -281,7 +281,7 @@ export default function CarbonPage() {
             </div>
 
             {/* Carbon Goal */}
-            <div className="bg-white/5 rounded-lg p-4">
+            <div className="bg-slate-800/60 rounded-lg p-4">
               <label className="block text-sm font-medium mb-2">Monthly Carbon Goal</label>
               <div className="flex items-center space-x-2">
                 <input
@@ -344,7 +344,7 @@ export default function CarbonPage() {
         </section>
 
         {/* Carbon Reduction Tips */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+  <section className="bg-gradient-to-br from-slate-900/75 to-slate-800/65 border border-white/6 rounded-2xl p-6 shadow-lg">
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
             <Leaf className="w-8 h-8 mr-3 text-green-400" />
             Carbon Reduction Strategies
@@ -353,7 +353,7 @@ export default function CarbonPage() {
             {carbonReductionTips.map((category, index) => {
               const Icon = category.icon;
               return (
-                <div key={index} className="bg-white/5 rounded-lg p-6">
+                <div key={index} className="bg-slate-800/60 rounded-lg p-6">
                   <div className="flex items-center mb-4">
                     <Icon className="w-6 h-6 mr-3 text-green-400" />
                     <h4 className="text-lg font-semibold">{category.category}</h4>
@@ -373,7 +373,7 @@ export default function CarbonPage() {
         </section>
 
         {/* Carbon Offset Projects */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+  <section className="bg-gradient-to-br from-slate-900/75 to-slate-800/65 border border-white/6 rounded-2xl p-6 shadow-lg">
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
             <Target className="w-8 h-8 mr-3 text-blue-400" />
             Carbon Offset Projects
@@ -384,7 +384,7 @@ export default function CarbonPage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {carbonProjects.map((project, index) => (
-              <div key={index} className="bg-white/5 rounded-lg p-6 border border-white/10">
+              <div key={index} className="bg-slate-800/60 rounded-lg p-6 border border-white/10">
                 <h4 className="text-lg font-semibold mb-2">{project.name}</h4>
                 <p className="text-sm text-gray-300 mb-3">{project.description}</p>
                 <div className="flex justify-between items-center">
@@ -402,7 +402,7 @@ export default function CarbonPage() {
         </section>
 
         {/* Environmental Impact */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+        <section className="bg-slate-800/30 backdrop-blur-sm rounded-2xl p-8">
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
             <TrendingDown className="w-8 h-8 mr-3 text-cyan-400" />
             Your Environmental Impact

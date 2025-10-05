@@ -270,7 +270,7 @@ export default function MapsPage() {
         </section>
 
         {/* Current Air Quality Summary */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+          {/* <section className="bg-gradient-to-br from-slate-900/65 to-slate-800/50 border border-white/6 rounded-2xl p-6 shadow-lg">
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
             <Cloud className="w-8 h-8 mr-3 text-blue-400" />
             Current Air Quality & Weather
@@ -297,7 +297,7 @@ export default function MapsPage() {
               <div className="text-sm opacity-80">Wind Speed</div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Searched Cities Comparison */}
         {searchedCities.length > 0 && (
@@ -315,7 +315,7 @@ export default function MapsPage() {
         />
 
         {/* Air Quality Map */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+  <section className="bg-gradient-to-br from-slate-900/65 to-slate-800/50 border border-white/6 rounded-2xl p-6 shadow-lg">
           <h3 className="text-2xl font-semibold mb-6">Interactive Air Quality Map</h3>
           <AQIMap
             userLocation={userLocation}
@@ -358,7 +358,7 @@ export default function MapsPage() {
         </section>
 
         {/* Top Polluted Spots */}
-        <section className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+        <section className="bg-gradient-to-br from-slate-900/65 to-slate-800/50 border border-white/6 rounded-2xl p-6 shadow-lg">
           <TopSpots dummyAQIData={dummyAQIData} getAQIColor={getAQIColor} />
         </section>
 
