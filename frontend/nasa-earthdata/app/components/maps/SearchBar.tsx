@@ -71,20 +71,26 @@ export default function SearchBar({
               </div>
             </div>
           ) : (
-            suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => onSuggestionSelect(suggestion)}
-                className="w-full text-left px-4 py-3 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none border-b border-white/10 last:border-b-0 transition-colors"
-              >
-                <div className="text-white text-sm font-medium">
-                  {suggestion.display_name.split(',')[0]}
-                </div>
-                <div className="text-gray-400 text-xs mt-1">
-                  {suggestion.display_name.split(',').slice(1, 3).join(', ')}
-                </div>
-              </button>
-            ))
+                suggestions.map((suggestion, index) => {
+                  // Use Nominatim place_id when available for a stable unique key
+                  const placeId = suggestion.original && suggestion.original.place_id;
+                  const coordKey = suggestion.label + '|' + (suggestion.lat ? Math.round(parseFloat(suggestion.lat)*100)/100 : index);
+                  const key = placeId ? `place_${placeId}` : coordKey;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => onSuggestionSelect(suggestion)}
+                      className="w-full text-left px-4 py-3 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none border-b border-white/10 last:border-b-0 transition-colors"
+                    >
+                      <div className="text-white text-sm font-medium">
+                        {suggestion.label || (suggestion.display_name ? suggestion.display_name.split(',')[0] : '')}
+                      </div>
+                      <div className="text-gray-400 text-xs mt-1">
+                        {suggestion.subLabel || (suggestion.display_name ? suggestion.display_name.split(',').slice(1, 3).join(', ') : '')}
+                      </div>
+                    </button>
+                  );
+                })
           )}
         </div>
       )}

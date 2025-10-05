@@ -129,13 +129,68 @@ export default function MapsPage() {
     setIsLoadingSuggestions(true);
     try {
       console.log('Fetching suggestions for:', query);
+      // Allow global search (remove countrycodes) and request address details
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=US&addressdetails=1&dedupe=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8&addressdetails=1&dedupe=1`
       );
       const data = await response.json();
       console.log('Suggestions received:', data);
-      setSuggestions(data);
-      setShowSuggestions(data.length > 0);
+
+      // Map of US state full names -> abbreviations to show 'New York, NY' style
+      const US_STATE_ABBREV: Record<string, string> = {
+        'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT','Delaware':'DE','Florida':'FL','Georgia':'GA','Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD','Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY','District of Columbia':'DC'
+      };
+
+      // Transform results: produce a compact label and subLabel for display and dedupe
+      const mapped = data.map((item: any) => {
+        const addr = item.address || {};
+        const city = addr.city || addr.town || addr.village || addr.hamlet || addr.municipality || item.display_name.split(',')[0];
+        const state = addr.state;
+        const country = addr.country;
+        const country_code = addr.country_code ? addr.country_code.toUpperCase() : (item.country_code ? item.country_code.toUpperCase() : undefined);
+
+        let stateShort = '';
+        if (country_code === 'US' && state) {
+          stateShort = US_STATE_ABBREV[state] || state;
+        }
+
+        // Build a short label: prefer 'City, ST' for US, otherwise 'City, Country' or just city
+        let label = city;
+        if (stateShort) label = `${city}, ${stateShort}`;
+        else if (state && country) label = `${city}, ${state}`;
+        else if (country) label = `${city}, ${country}`;
+
+        const subLabel = item.display_name.split(',').slice(1, 3).join(', ').trim();
+
+        return {
+          original: item,
+          label,
+          subLabel,
+          city,
+          state,
+          country,
+          country_code,
+          lat: item.lat,
+          lon: item.lon,
+        };
+      });
+
+      // Deduplicate: prefer unique Nominatim place_id when available, otherwise fall back to label+rounded coords
+      const unique: any[] = [];
+      const seen = new Set<string>();
+      for (const v of mapped) {
+        const latRound = v.lat ? Math.round(parseFloat(v.lat)*100)/100 : 0;
+        const lonRound = v.lon ? Math.round(parseFloat(v.lon)*100)/100 : 0;
+        const id = v.original && v.original.place_id ? String(v.original.place_id) : `${v.label}|${latRound}|${lonRound}`;
+        if (!seen.has(id)) {
+          seen.add(id);
+          unique.push(v);
+        }
+      }
+
+      console.log('Transformed suggestions:', unique);
+      setSuggestions(unique);
+      setShowSuggestions(unique.length > 0);
     } catch (error) {
       console.error('Failed to fetch suggestions:', error);
       setSuggestions([]);
@@ -147,10 +202,12 @@ export default function MapsPage() {
 
   const handleSuggestionSelect = (suggestion: any) => {
     console.log('Suggestion selected:', suggestion);
-    const cityName = suggestion.display_name.split(',')[0]; // Get the main city name
-    setSearchQuery(cityName);
+    // suggestion may be the transformed shape from fetchSuggestions
+    const label = suggestion.label || (suggestion.display_name ? suggestion.display_name.split(',')[0] : '');
+    setSearchQuery('');
     setShowSuggestions(false);
-    searchCity(cityName);
+    // Use the compact label (e.g., "New York, NY" or "New Delhi") when searching
+    searchCity(label);
   };
 
   const handleInputChange = (value: string) => {
