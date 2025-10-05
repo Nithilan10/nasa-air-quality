@@ -136,8 +136,8 @@ export default function NavBar() {
                           <div className="flex items-start space-x-3">
                             {getNotificationIcon(notification.type)}
                             <div className="flex-1">
-                              <p className="text-sm text-gray-800">{notification.message}</p>
-                              <p className="text-xs text-gray-500 mt-1">{new Date().toLocaleTimeString()}</p>
+                              <p className="text-sm text-white">{notification.message}</p>
+                              <p className="text-xs text-white mt-1">{new Date().toLocaleTimeString()}</p>
                             </div>
                           </div>
                           <button onClick={(e) => { e.stopPropagation(); dismissNotification(notification.id); }} className="text-gray-400 hover:text-gray-600 ml-2">✕</button>
