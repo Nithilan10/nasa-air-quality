@@ -1,0 +1,4 @@
+DateObserved,HourObserved,LocalTimeZone,ReportingArea,StateCode,Latitude,Longitude,ParameterName,AQI,Category,source
+2025-10-02,18,PST,Seattle-Bellevue-Kent Valley,WA,47.562,-122.3405,O3,33,"{'Number': 1, 'Name': 'Good'}",epa
+2025-10-02,18,PST,Seattle-Bellevue-Kent Valley,WA,47.562,-122.3405,PM2.5,47,"{'Number': 1, 'Name': 'Good'}",epa
+2025-10-02,18,PST,Seattle-Bellevue-Kent Valley,WA,47.562,-122.3405,PM10,8,"{'Number': 1, 'Name': 'Good'}",epa

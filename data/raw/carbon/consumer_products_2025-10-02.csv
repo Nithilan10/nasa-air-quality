@@ -1,0 +1,6 @@
+location,state,fips,avg_monthly_electronics_purchases,avg_monthly_clothing_purchases,avg_monthly_furniture_purchases,data_source,date,estimated_monthly_consumer_co2_kg
+Seattle,WA,53033,0.7,2.2,0.1,CONSUMER_PRODUCTS,2025-10-02,144.1
+New York,NY,36061,0.8,2.3,0.2,CONSUMER_PRODUCTS,2025-10-02,167.9
+Los Angeles,CA,06037,0.6,2.6,0.30000000000000004,CONSUMER_PRODUCTS,2025-10-02,162.8
+Chicago,IL,17031,0.8,2.8,0.1,CONSUMER_PRODUCTS,2025-10-02,170.4
+Houston,TX,48201,0.7,2.2,0.2,CONSUMER_PRODUCTS,2025-10-02,154.1

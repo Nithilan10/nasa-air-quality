@@ -1,0 +1,16 @@
+location,state,fips,avg_daily_vehicle_miles,public_transit_usage_rate,electric_vehicle_penetration,data_source,date,estimated_daily_co2_kg,carbon_source,avg_daily_meat_consumption_kg,avg_daily_dairy_consumption_kg,avg_daily_vegetable_consumption_kg,estimated_daily_food_co2_kg,avg_monthly_electronics_purchases,avg_monthly_clothing_purchases,avg_monthly_furniture_purchases,estimated_monthly_consumer_co2_kg
+Seattle,WA,53033,27.0,0.27,0.16999999999999998,TRANSPORTATION_EMISSIONS,2025-10-02,9.923039999999999,transportation,,,,,,,,
+New York,NY,36061,38.0,0.28,0.18,TRANSPORTATION_EMISSIONS,2025-10-02,14.003759999999998,transportation,,,,,,,,
+Los Angeles,CA,06037,31.0,0.41000000000000003,0.16,TRANSPORTATION_EMISSIONS,2025-10-02,11.36212,transportation,,,,,,,,
+Chicago,IL,17031,43.0,0.32999999999999996,0.08,TRANSPORTATION_EMISSIONS,2025-10-02,15.41636,transportation,,,,,,,,
+Houston,TX,48201,27.0,0.37,0.12000000000000001,TRANSPORTATION_EMISSIONS,2025-10-02,9.788039999999999,transportation,,,,,,,,
+Seattle,WA,53033,,,,FOOD_CARBON,2025-10-02,,food_carbon,0.22,0.42,0.42000000000000004,7.0626,,,,
+New York,NY,36061,,,,FOOD_CARBON,2025-10-02,,food_carbon,0.23,0.43,0.53,7.501899999999999,,,,
+Los Angeles,CA,06037,,,,FOOD_CARBON,2025-10-02,,food_carbon,0.26,0.41,0.46,7.6703,,,,
+Chicago,IL,17031,,,,FOOD_CARBON,2025-10-02,,food_carbon,0.28,0.32999999999999996,0.5800000000000001,7.6499000000000015,,,,
+Houston,TX,48201,,,,FOOD_CARBON,2025-10-02,,food_carbon,0.22,0.37,0.42000000000000004,6.7131,,,,
+Seattle,WA,53033,,,,CONSUMER_PRODUCTS,2025-10-02,,consumer_products,,,,,0.7,2.2,0.1,144.1
+New York,NY,36061,,,,CONSUMER_PRODUCTS,2025-10-02,,consumer_products,,,,,0.8,2.3,0.2,167.9
+Los Angeles,CA,06037,,,,CONSUMER_PRODUCTS,2025-10-02,,consumer_products,,,,,0.6,2.6,0.30000000000000004,162.8
+Chicago,IL,17031,,,,CONSUMER_PRODUCTS,2025-10-02,,consumer_products,,,,,0.8,2.8,0.1,170.4
+Houston,TX,48201,,,,CONSUMER_PRODUCTS,2025-10-02,,consumer_products,,,,,0.7,2.2,0.2,154.1

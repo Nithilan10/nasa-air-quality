@@ -1,0 +1,6 @@
+location,state,zip,date,tree_pollen_level,grass_pollen_level,weed_pollen_level,mold_spore_level,overall_allergy_index,data_source
+Seattle,WA,98101,2025-10-02,0,0,9,2,9,ALLERGY_CLINIC
+New York,NY,10001,2025-10-02,0,0,4,2,4,ALLERGY_CLINIC
+Los Angeles,CA,90001,2025-10-02,0,0,5,5,5,ALLERGY_CLINIC
+Chicago,IL,60601,2025-10-02,0,0,3,3,3,ALLERGY_CLINIC
+Houston,TX,77001,2025-10-02,0,0,4,6,6,ALLERGY_CLINIC

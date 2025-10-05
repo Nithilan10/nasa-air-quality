@@ -1,0 +1,6 @@
+location,state,fips,avg_daily_meat_consumption_kg,avg_daily_dairy_consumption_kg,avg_daily_vegetable_consumption_kg,data_source,date,estimated_daily_food_co2_kg
+Seattle,WA,53033,0.22,0.42,0.42000000000000004,FOOD_CARBON,2025-10-02,7.0626
+New York,NY,36061,0.23,0.43,0.53,FOOD_CARBON,2025-10-02,7.501899999999999
+Los Angeles,CA,06037,0.26,0.41,0.46,FOOD_CARBON,2025-10-02,7.6703
+Chicago,IL,17031,0.28,0.32999999999999996,0.5800000000000001,FOOD_CARBON,2025-10-02,7.6499000000000015
+Houston,TX,48201,0.22,0.37,0.42000000000000004,FOOD_CARBON,2025-10-02,6.7131

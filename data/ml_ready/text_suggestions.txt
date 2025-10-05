@@ -1,0 +1,72 @@
+Air Quality Health Recommendations for Asthma Patients
+
+When AQI is Good (0-50):
+- Outdoor activities are generally safe for most people
+- People with asthma can enjoy outdoor activities
+- Good time for outdoor exercise and recreation
+- No special precautions needed for sensitive groups
+
+When AQI is Moderate (51-100):
+- People with asthma should consider reducing prolonged outdoor exertion
+- Sensitive individuals may experience minor breathing discomfort
+- Consider indoor activities if you have respiratory conditions
+- Monitor symptoms and reduce activity if breathing becomes difficult
+
+When AQI is Unhealthy for Sensitive Groups (101-150):
+- People with asthma should avoid prolonged outdoor exertion
+- Children and adults with respiratory conditions should limit outdoor activities
+- Consider staying indoors with windows closed
+- Use air purifiers if available
+- Avoid outdoor exercise and heavy physical activity
+
+When AQI is Unhealthy (151-200):
+- Everyone should avoid prolonged outdoor exertion
+- People with asthma should avoid all outdoor activities
+- Sensitive groups should remain indoors
+- Close windows and doors
+- Use air conditioning and air purifiers
+- Consider wearing N95 masks if going outside is necessary
+
+When AQI is Very Unhealthy (201-300):
+- Everyone should avoid outdoor activities
+- People with asthma should stay indoors
+- Close all windows and doors
+- Use air conditioning and air purifiers
+- Avoid any outdoor exercise
+- Consider relocating to areas with better air quality
+
+When AQI is Hazardous (301+):
+- Everyone should avoid all outdoor activities
+- Stay indoors with windows and doors closed
+- Use air conditioning and air purifiers
+- Consider evacuating to areas with better air quality
+- Emergency conditions - follow local health advisories
+
+Pollen Allergy Recommendations:
+- Check pollen counts daily during allergy season
+- Stay indoors when pollen counts are high
+- Keep windows closed during high pollen periods
+- Use air conditioning with HEPA filters
+- Shower after being outdoors to remove pollen
+- Consider over-the-counter antihistamines
+- Consult with allergist for severe symptoms
+
+Carbon Footprint Reduction Tips:
+- Use public transportation or carpool when possible
+- Walk or bike for short trips
+- Choose energy-efficient appliances
+- Reduce meat consumption
+- Buy local and seasonal produce
+- Reduce, reuse, and recycle
+- Use renewable energy sources when available
+- Plant trees and maintain green spaces
+
+General Health Tips for Air Quality:
+- Monitor local air quality forecasts
+- Plan outdoor activities for times with better air quality
+- Keep rescue inhalers readily available
+- Maintain good indoor air quality
+- Stay hydrated
+- Avoid smoking and secondhand smoke
+- Regular exercise when air quality is good
+- Consult healthcare providers for personalized advice
